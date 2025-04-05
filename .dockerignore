@@ -11,6 +11,7 @@
 !requirements.txt
 !docker-entrypoint.sh
 !nginx.conf
+!Caddyfile
 
 # 忽略不需要的目录和文件
 **/__pycache__/

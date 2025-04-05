@@ -1,0 +1,41 @@
+{
+        log {
+                output file /var/log/caddy/error.log {
+                        level ERROR
+                }
+                output file /var/log/caddy/access.log {
+                        level INFO
+                }
+        }
+}
+
+:80 {
+        # WebSocket 转发  
+        handle /ws {
+                reverse_proxy http://127.0.0.1:8765
+        }
+
+        # API 请求转发  
+        handle /api/* {
+                reverse_proxy http://127.0.0.1:5000
+        }
+
+        # 静态文件服务  
+        handle {
+                root * /app/frontend/dist
+                try_files {path} /index.html
+                file_server
+        }
+        encode gzip {
+                match {
+                        header Content-Type text/plain
+                        header Content-Type text/css
+                        header Content-Type application/json
+                        header Content-Type application/javascript
+                        header Content-Type text/xml
+                        header Content-Type application/xml
+                        header Content-Type application/xml+rss
+                        header Content-Type text/javascript
+                }
+        }
+}

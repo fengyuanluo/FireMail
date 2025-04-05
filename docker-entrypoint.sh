@@ -4,9 +4,6 @@ set -e
 # 创建必要的数据目录
 mkdir -p /app/backend/data
 
-# 检查数据权限
-chown -R www-data:www-data /app/backend/data 2>/dev/null || true
-
 # 设置环境变量
 export HOST="${HOST:-0.0.0.0}"
 export FLASK_PORT="${FLASK_PORT:-5000}"
@@ -33,17 +30,16 @@ EOF
 echo "已创建环境配置文件，内容如下:"
 cat /app/frontend/dist/env-config.js
 
-# 确保nginx日志目录存在
-mkdir -p /var/log/nginx
-chown -R www-data:www-data /var/log/nginx
+# 确保Caddy日志目录存在
+mkdir -p /var/log/caddy
 
-# 检查Nginx配置文件
-echo "检查Nginx配置..."
-nginx -t || (echo "Nginx配置错误" && exit 1)
+# 检查Caddy配置文件
+echo "检查Caddy配置..."
+caddy validate --config /app/Caddyfile || (echo "Caddy配置错误" && exit 1)
 
 # 启动Nginx服务
-echo "启动Nginx服务..."
-nginx &
+echo "启动Caddy服务..."
+caddy run --config /app/Caddyfile &
 
 # 启动Python后端应用
 cd /app
